@@ -14,10 +14,19 @@ namespace Snake
     {
         public int row;
         public int col;
+        public int color;
         public Position(int row, int col)
         {
             this.row = row;
             this.col = col;
+            this.color = 0;
+        }
+
+        public Position(int row, int col, int color)
+        {
+            this.row = row;
+            this.col = col;
+            this.color = color;
         }
     }
 
@@ -83,12 +92,12 @@ namespace Snake
 
         //draw obstacles
         static Position CreateObstacle(Position food, Position obstacle, Random randomNumbersGenerator,
-            Queue<Position> snakeElements, List<Position> obstacles)
+            Queue<Position> snakeElements, List<Position> obstacles, ConsoleColor[] color)
         {
             do
             {
                 obstacle = new Position(randomNumbersGenerator.Next(6, Console.WindowHeight),
-                    randomNumbersGenerator.Next(0, Console.WindowWidth));
+                    randomNumbersGenerator.Next(0, Console.WindowWidth), randomNumbersGenerator.Next(color.Length));
             }
             while (snakeElements.Contains(obstacle) || //if snake eat the obstacle
                         obstacles.Contains(obstacle) ||         //if obstacles appear at the same position
@@ -96,7 +105,7 @@ namespace Snake
             //the position of food and obstacle is different
             obstacles.Add(obstacle); //then obstacle will be generated
             Console.SetCursorPosition(obstacle.col, obstacle.row);
-            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.ForegroundColor = color[obstacle.color];
             Console.Write("\u2593");
             return obstacle;
         }
@@ -362,7 +371,8 @@ namespace Snake
                     //--------------------------------------level------------------------------------
                     int level = 1;
 
-          
+                    ConsoleColor[] color = { ConsoleColor.Red, ConsoleColor.Green, ConsoleColor.Cyan, ConsoleColor.Gray, ConsoleColor.Blue };
+
                     int supriseFoodDissapearTime = 3390;
                     int negativePoints = 0;
                     int winningscore = 10;
@@ -433,26 +443,23 @@ namespace Snake
                     List<Position> obstacles = new List<Position>()
                                 {
                                     new Position(randomNumbersGenerator.Next(6, Console.WindowHeight),
-                                        randomNumbersGenerator.Next(0, Console.WindowWidth)),
+                                        randomNumbersGenerator.Next(0, Console.WindowWidth),randomNumbersGenerator.Next(color.Length)),
                                     new Position(randomNumbersGenerator.Next(6, Console.WindowHeight),
-                                        randomNumbersGenerator.Next(0, Console.WindowWidth)),
+                                        randomNumbersGenerator.Next(0, Console.WindowWidth),randomNumbersGenerator.Next(color.Length)),
                                     new Position(randomNumbersGenerator.Next(6, Console.WindowHeight),
-                                        randomNumbersGenerator.Next(0, Console.WindowWidth)),
+                                        randomNumbersGenerator.Next(0, Console.WindowWidth),randomNumbersGenerator.Next(color.Length)),
                                     new Position(randomNumbersGenerator.Next(6, Console.WindowHeight),
-                                        randomNumbersGenerator.Next(0, Console.WindowWidth))
+                                        randomNumbersGenerator.Next(0, Console.WindowWidth),randomNumbersGenerator.Next(color.Length))
                                 };
-
                     //For each loop
                     //Each obstacle in List(obstacles) to set the color, position
                     //Print out the obstacle
-                    foreach (Position obstacle in obstacles)
+                    for (int j = 0; j < obstacles.Count(); j++)
                     {
-
                         //drawing obstacles
-                        Console.ForegroundColor = ConsoleColor.Cyan;
-                        Console.SetCursorPosition(obstacle.col, obstacle.row);
+                        Console.ForegroundColor = color[obstacles[j].color];
+                        Console.SetCursorPosition(obstacles[j].col, obstacles[j].row);
                         Console.Write("\u2593");
-                        //JASMINNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN
                     }
 
                     //creating snake body (5 "*")
@@ -556,12 +563,11 @@ namespace Snake
                                     Console.Write("*");
                                 }
 
-                                foreach (Position obstacle in obstacles)
+                                for (int j = 0; j < obstacles.Count(); j++)
                                 {
-
                                     //drawing obstacles
-                                    Console.ForegroundColor = ConsoleColor.Cyan;
-                                    Console.SetCursorPosition(obstacle.col, obstacle.row);
+                                    Console.ForegroundColor = color[obstacles[j].color];
+                                    Console.SetCursorPosition(obstacles[j].col, obstacles[j].row);
                                     Console.Write("\u2593");
                                 }
 
@@ -626,7 +632,7 @@ namespace Snake
 
                                 Position obstacle = new Position();
                                 //generate new position for the obstacles
-                                obstacle = CreateObstacle(food, obstacle, randomNumbersGenerator, snakeElements, obstacles);
+                                obstacle = CreateObstacle(food, obstacle, randomNumbersGenerator, snakeElements, obstacles,color);
 
                                 if (player1.IsLoadCompleted == true)
                                 {
@@ -747,7 +753,7 @@ namespace Snake
 
                             Position obstacle = new Position();
                             //generate new position for the obstacles
-                            obstacle = CreateObstacle(food, obstacle, randomNumbersGenerator, snakeElements, obstacles);
+                            obstacle = CreateObstacle(food, obstacle, randomNumbersGenerator, snakeElements, obstacles,color);
                         }
 
                         
@@ -801,7 +807,7 @@ namespace Snake
 
                             Position obstacle = new Position();
                             //generate new position for the obstacles
-                            obstacle = CreateObstacle(supriseFood, obstacle, randomNumbersGenerator, snakeElements, obstacles);
+                            obstacle = CreateObstacle(supriseFood, obstacle, randomNumbersGenerator, snakeElements, obstacles,color);
                         }
 
                         else
