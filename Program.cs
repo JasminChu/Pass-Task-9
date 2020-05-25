@@ -375,7 +375,7 @@ namespace Snake
 
                     int supriseFoodDissapearTime = 3390;
                     int negativePoints = 0;
-                    int winningscore = 10;
+                    int winningscore = 3;
                     int _scorecount = 0;
                     
                     Console.WriteLine("Name: ");
@@ -383,36 +383,39 @@ namespace Snake
                     Console.Clear();    
 
                     if (File.Exists("winner.txt") == true)
-                    {
+                    { 
                         string previouswinner = File.ReadAllText("winner.txt");
                         string[] splitBySpace = previouswinner.Split(' ');
-                        string first = splitBySpace.ElementAt(0);
-                        int last = Convert.ToInt32(splitBySpace.ElementAt(splitBySpace.Length - 1));
-                        Scoreboard.WriteAt("Previous Winner: " + previouswinner, 0, 0);
+                        string name = splitBySpace.ElementAt(0);
+                        string line1 = File.ReadLines("winner.txt").First();
+                        string[] splitlinebyspace = line1.Split(' ');
+                        string line1name = splitlinebyspace.ElementAt(0);
+                        int lastscorecount = Convert.ToInt32(splitlinebyspace.ElementAt(splitlinebyspace.Length-1));
+                        
+                        Scoreboard.WriteAt("Previous Winner: " + name + " with score " + lastscorecount, 0, 0);
 
-                        if (first == winner)
+                        if (line1name == winner)
                         {
-                            _scorecount = last;
-                        }
+                            _scorecount = lastscorecount;
 
-                        if (last >= winningscore)
-                        {
-                            winningscore = 10;
-                        }
-                        else if (last >= 10)
-                        {
-                            winningscore = 30;
-                        }
-                        else if (last >= 30)
-                        {
-                            winningscore = 100;
+                            if (lastscorecount >= 3)
+                            {
+                                winningscore = 10;
+                            }
+                            else if (lastscorecount >= 10)
+                            {
+                                winningscore = 30;
+                            }
+                            else if (lastscorecount >= 30)
+                            {
+                                winningscore = 100;
+                            }
                         }
                     }
                     else if (File.Exists("winner.txt") == false)
                     {
                         File.Create("winner.txt");
                     }
-                    File.WriteAllText("winner.txt", winner + " with score " + _scorecount);
                     Scoreboard.WriteAt("Your Current Score", 0, 1);
                     Scoreboard.WriteScore(_scorecount, 0, 2);
                     Scoreboard.WriteAt("Your Remains Life", 0, 3);
@@ -546,7 +549,12 @@ namespace Snake
                                 if (File.Exists("winner.txt") == true)
                                 {
                                     string previouswinner = File.ReadAllText("winner.txt");
-                                    Scoreboard.WriteAt("Previous Winner: " + previouswinner, 0, 0);
+                                    string[] splitBySpace = previouswinner.Split(' ');
+                                    string name = splitBySpace.ElementAt(0);
+                                    string line1 = File.ReadLines("winner.txt").First();
+                                    string[] splitlinebyspace = line1.Split(' ');
+                                    int lastscorecount = Convert.ToInt32(splitlinebyspace.ElementAt(splitlinebyspace.Length - 1));
+                                    Scoreboard.WriteAt("Previous Winner: " + name + " with score " + lastscorecount, 0, 0);
                                 }
 
                                 Scoreboard.WriteAt("Your Current Score", 0, 1);
@@ -643,14 +651,27 @@ namespace Snake
                             //------------------------------------------------GameOver----------------------------------------------------
                             else
                             {
+                                string previouswinner = File.ReadAllText("winner.txt");
+                                string[] line =
+                                {
+                                    winner + " with score " + _scorecount,
+                                    previouswinner,
+                                };
+                                File.WriteAllLines("winner.txt", line);
+                                Console.Clear();
+                                while (Console.ReadKey().Key != ConsoleKey.Enter)
+                                {
+                                    Console.WriteLine("\nPress Enter to Continue.");
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine("All Previous Winner: \n" + previouswinner);
+                                }
                                 Console.Clear();
                                 Console.ForegroundColor = ConsoleColor.Red;
                                 string gameover = "Game over!";
                                 string points = "Your points are: ";
                                 string exit = "Press Enter to exit.";
-
                                 int height = decimal.ToInt32((Console.WindowHeight) / 2) - 3;
-                                int width = decimal.ToInt32((Console.WindowWidth - gameover.Length) / 2);
+                                int width = decimal.ToInt32((Console.WindowWidth - gameover.Length) / 2);   
                                 //print Game over and points
                                 height = PrintAtCenter(gameover, height);
                                 height = PrintAtCenter(points + _scorecount, height);
@@ -706,7 +727,7 @@ namespace Snake
                             Scoreboard.WriteAt("Your Current Score", 0, 1);
                             Scoreboard.WriteScore(_scorecount, 0, 2);
 
-                            if (_scorecount == winningscore)
+                            if (_scorecount == winningscore || _scorecount >= winningscore)
                             {
                                 Console.ForegroundColor = ConsoleColor.Red;
                                 string gamewon = "You have won the game!";
@@ -720,9 +741,15 @@ namespace Snake
 
 
                                 Console.WriteLine("Winner saved into text file!");
-                                File.WriteAllText("winner.txt", winner + " with score " + _scorecount);
                                 string previouswinner = File.ReadAllText("winner.txt");
-                                Console.WriteLine(previouswinner);
+                                string[] line =
+                                {
+                                    winner + " with score " + _scorecount,
+                                    previouswinner,
+                                };
+                                File.WriteAllLines("winner.txt", line);
+                                Console.WriteLine("All Winner: \n" + winner + " with score " + _scorecount + "\n" + previouswinner);
+
 
                                 Console.WriteLine("Press Enter to exit.");
 
@@ -781,9 +808,14 @@ namespace Snake
 
 
                                 Console.WriteLine("Winner saved into text file!");
-                                File.WriteAllText("winner.txt", winner + " with score " + _scorecount);
                                 string previouswinner = File.ReadAllText("winner.txt");
-                                Console.WriteLine(previouswinner);
+                                string[] line =
+                                {
+                                    winner + " with score " + _scorecount,
+                                    previouswinner,
+                                };
+                                File.WriteAllLines("winner.txt", line);
+                                Console.WriteLine("All Winner: \n" + winner + " with score " + _scorecount + "\n" + previouswinner);
                                 Console.WriteLine("Press Enter to exit.");
 
                                 while (Console.ReadKey().Key != ConsoleKey.Enter)
